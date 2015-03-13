@@ -26,7 +26,7 @@ function apiTimerDelegator(delegate){
 
 function getCityName(cid,callback){
     vkObject('database.getCitiesById',{city_ids : cid},function(err,city){
-        console.log(city[0].name);
+        callback(city[0].name);
     });
 }
 
@@ -145,7 +145,9 @@ getToken('','',function(token){
                 getYearByEducation(education.name,'139736562',function(year){
                     console.log(year.year);
                     getCity('139736562',function(city){
-                        getCityName(city.city,function(){});
+                        getCityName(city.city,function(name){
+                           console.log(name);
+                        });
                     });
                 });
             });
