@@ -24,6 +24,12 @@ function apiTimerDelegator(delegate){
     },200);
 }
 
+function getCityName(cid,callback){
+    vkObject('database.getCitiesById',{city_ids : cid},function(err,city){
+        console.log(city[0].name);
+    });
+}
+
 
 function initVkObject(token,callback){
     var vk = vkontakte(token);
@@ -100,17 +106,50 @@ function getYearByEducation(education,uid,callback){
     });
 }
 
+
+function getCity(uid,callback){
+    var cityList = {};
+    vkObject('friends.get',{uid : uid, fields : 'city'},function(err,friends){
+        friends.forEach(function(friend){
+            if(friend.city!=0 && friend.city!=undefined){
+                if(cityList[friend.city]!=undefined){
+                    cityList[friend.city]+=1;
+                }else{
+                    cityList[friend.city] = 1;
+                }
+            }
+        });
+
+        var cityObject = {};
+        cityObject.city = 0;
+        cityObject.count = 0;
+
+        for(city in cityList){
+            if(cityList[city]>cityObject.count && city!= cityObject.city){
+                cityObject.city =city;
+                cityObject.count = cityList[city];
+            }
+        }
+
+        callback(cityObject);
+    });
+
+}
+
 getToken('','',function(token){
     if(token!=''){
         initVkObject(token,function(vk){
             vkObject = vk;
-            getEducation('39243691',function(education){
+            getEducation('139736562',function(education){
                 console.log(education.name);
-                getYearByEducation(education.name,'39243691',function(year){
+                getYearByEducation(education.name,'139736562',function(year){
                     console.log(year.year);
+                    getCity('139736562',function(city){
+                        getCityName(city.city,function(){});
+                    });
                 });
             });
-        })
+        });
     }else{
         console.error('Empty token!');
     }
